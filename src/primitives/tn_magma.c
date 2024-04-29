@@ -62,10 +62,27 @@ static void test_t()
 }
 #endif // TN_TEST
 
+static inline tn_u32_t g(tn_u32_t _a, tn_u32_t _key)
+{
+    tn_u32_t a = t(_a + _key);
+    return a << 11 | a >> 21;
+}
+
+#ifdef TN_TEST
+static void test_g()
+{
+    TEST_ASSERT(g(0xFEDCBA98, 0x87654321) == 0xFDCBC20C);
+    TEST_ASSERT(g(0x87654321, 0xFDCBC20C) == 0x7E791A4B);
+    TEST_ASSERT(g(0xFDCBC20C, 0x7E791A4B) == 0xC76549EC);
+    TEST_ASSERT(g(0x7E791A4B, 0xC76549EC) == 0x9791C849);
+}
+#endif // TN_TEST
+
 #ifdef TN_TEST
 void test_magma()
 {
     RUN_TEST(test_t);
+    RUN_TEST(test_g);
 }
 #endif // TN_TEST
 
