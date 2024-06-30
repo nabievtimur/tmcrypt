@@ -37,6 +37,8 @@ typedef unsigned long tn_size_t;
 typedef unsigned long tn_addr_t;
 typedef tn_u64_t tn_flag_t;
 typedef tn_u8_t tn_bool_t; 
+typedef unsigned int tn_id;
+typedef void * tn_pvoid;
 
 #define TN_FALSE 0x00
 #define NT_TRUE !TN_FALSE

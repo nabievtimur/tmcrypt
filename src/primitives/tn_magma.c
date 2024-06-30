@@ -78,11 +78,80 @@ static void test_g()
 }
 #endif // TN_TEST
 
+static inline tn_u64_t G(tn_u64_t _a, tn_u32_t _key)
+{
+    return _a << 32 | (g((tn_u32_t)_a, _key) + (_a >> 32));
+}
+
+#ifdef TN_TEST
+static void test_G()
+{
+    TEST_ASSERT(G(0xFEDCBA98, 0x87654321) == 0xFDCBC20C);
+    TEST_ASSERT(G(0x87654321, 0xFDCBC20C) == 0x7E791A4B);
+    TEST_ASSERT(G(0xFDCBC20C, 0x7E791A4B) == 0xC76549EC);
+    TEST_ASSERT(G(0x7E791A4B, 0xC76549EC) == 0x9791C849);
+}
+#endif // TN_TEST
+
+static inline tn_u64_t G_(tn_u64_t _a, tn_u32_t _key)
+{
+    return ((g((tn_u32_t)_a, _key) + (_a >> 32)) << 32) | _a & 0x00000000FFFFFFFF;
+}
+
+#ifdef TN_TEST
+static void test_G_()
+{
+    TEST_ASSERT(G(0xFEDCBA98, 0x87654321) == 0xFDCBC20C);
+    TEST_ASSERT(G(0x87654321, 0xFDCBC20C) == 0x7E791A4B);
+    TEST_ASSERT(G(0xFDCBC20C, 0x7E791A4B) == 0xC76549EC);
+    TEST_ASSERT(G(0x7E791A4B, 0xC76549EC) == 0x9791C849);
+}
+#endif // TN_TEST
+
+static inline tn_u32_t round_key(tn_u256_t* _key, tn_u8_t _round)
+{
+    if (_round < 24)
+    {
+        return _key->u32[_round % 8];
+    }
+    
+    return _key->u32[7 - (_round % 8)];
+}
+
+#ifdef TN_TEST
+static void test_round_key()
+{
+    tn_u256_t key = 
+    { 
+        0xFF, 0xEE, 0xDD, 0xCC, 0xBB, 0xAA, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00, 
+        0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF
+    };
+
+    TEST_ASSERT(round_key(&key, 0) == 0xFFEEDDCC);
+    TEST_ASSERT(round_key(&key, 1) == 0xBBAA9988);
+    TEST_ASSERT(round_key(&key, 2) == 0x77665544);
+    TEST_ASSERT(round_key(&key, 3) == 0x33221100);
+    TEST_ASSERT(round_key(&key, 4) == 0xF0F1F2F3);
+    TEST_ASSERT(round_key(&key, 5) == 0xF4F5F6F7);
+    TEST_ASSERT(round_key(&key, 6) == 0xF8F9FAFB);
+    TEST_ASSERT(round_key(&key, 7) == 0xFCFDFEFF);
+    TEST_ASSERT(round_key(&key, 8) == 0xFFEEDDCC);
+    TEST_ASSERT(round_key(&key, 9) == 0xBBAA9988);
+    TEST_ASSERT(round_key(&key, 10) == 0x77665544);
+    TEST_ASSERT(round_key(&key, 29) == 0x77665544);
+    TEST_ASSERT(round_key(&key, 30) == 0xBBAA9988);
+    TEST_ASSERT(round_key(&key, 31) == 0xFFEEDDCC);
+}
+#endif // TN_TEST
+
 #ifdef TN_TEST
 void test_magma()
 {
     RUN_TEST(test_t);
     RUN_TEST(test_g);
+    RUN_TEST(test_G);
+    RUN_TEST(test_G_);
+    RUN_TEST(test_round_key);
 }
 #endif // TN_TEST
 

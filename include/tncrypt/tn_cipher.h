@@ -9,15 +9,47 @@
 #ifndef TN_CIPHER_H_
 #define TN_CIPHER_H_
 
-#include "tn_defines.h"
-#include "tn_types.h"
+#include "tncrypt\tn_status.h"
+#include "tncrypt\tn_types.h"
+#include "tncrypt\tn_defines.h"
 
-/**
- * @brief defines block size in bits abstract cipher
- * @param _flags        - for unique additional information
- * @return block size
- */
-typedef tn_size_t (*tn_pf_cipher_abstract_get_block_size_t)(
+typedef struct tn_cipher
+{
+    /**
+     * @brief defines block size in bits abstract cipher
+     * @param _flags        - for unique additional information
+     * @return cipher info (ref tn_cipher_info.h)
+     */
+    tn_status_t (*constructor)(tn_cipher** _cipher, tn_id _id);
+ 
+    /**
+     * @brief defines block size in bits abstract cipher
+     * @param _flags        - for unique additional information
+     * @return cipher info (ref tn_cipher_info.h)
+     */
+    tn_status_t (*destructor)(tn_cipher** _cipher);
+
+    /**
+     * @brief defines block size in bits abstract cipher
+     * @param _flags        - for unique additional information
+     * @return cipher info (ref tn_cipher_info.h)
+     */
+    tn_status_t (*destructor)(tn_cipher** _cipher);
+
+    /**
+     * @brief defines block size in bits abstract cipher
+     * @param _flags        - for unique additional information
+     * @return cipher info (ref tn_cipher_info.h)
+     */
+    tn_status_t (*destructor)(tn_cipher** _cipher);
+
+
+
+    
+} tn_cipher_c;
+
+
+typedef tn_cipher_info_t (*tn_pf_cipher_abstract_get_cipher_info_t)(
     _TN_IN_OPT  tn_flag_t   _flags);
 
 /**
@@ -25,7 +57,7 @@ typedef tn_size_t (*tn_pf_cipher_abstract_get_block_size_t)(
  * @param _flags        -   for unique additional information
  * @return key size
  */
-typedef tn_size_t (*tn_pf_cipher_abstract_get_key_size_t)(
+typedef tn_key_info_t (*tn_pf_cipher_abstract_get_key_info_t)(
     _TN_IN_OPT  tn_flag_t   _flags);
 
 /**
@@ -58,8 +90,8 @@ typedef void (*tn_pf_cipher_abstract_decrypt_block_t)(
 
 typedef struct tn_cipher_abstract
 {
-    tn_pf_cipher_abstract_get_block_size_t  get_block_size;
-    tn_pf_cipher_abstract_get_key_size_t    get_key_size;
+    tn_pf_cipher_abstract_get_cipher_info_t get_block_size;
+    tn_pf_cipher_abstract_get_key_info_t    get_key_size;
     tn_pf_cipher_abstract_encrypt_block_t   encrypt_block;
     tn_pf_cipher_abstract_decrypt_block_t   decrypt_block;
 } tn_cipher_abstract_t;
@@ -72,6 +104,7 @@ typedef struct tn_cipher_abstract
  * @param _out      -   plain text block, size = tn_cipher_abstract_block_size()
  * @param _flags    -   for unique additional information
  */
-typedef void (*tn_pf_cipher_abstract_fill)(tn_cipher_abstract_t* _cipher_abstract);
+typedef void (*tn_pf_cipher_abstract_fill)(
+    tn_cipher_abstract_t* _cipher_abstract);
 
 #endif // !TN_CIPHER_H_

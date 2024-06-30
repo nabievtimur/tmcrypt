@@ -14,6 +14,8 @@ set(TN_INCLUDE modules/Unity/src include src)
 set(TN_LIB tncrypto)
 set(TN_LIB_SOURCE
     src/tn_types.c)
+add_library(${TN_LIB} STATIC ${TN_LIB_SOURCE})
+target_include_directories(${TN_LIB} PUBLIC ${TN_INCLUDE})
 
 # TEST_APPLICATION
 set(TN_TEST tn_test)
