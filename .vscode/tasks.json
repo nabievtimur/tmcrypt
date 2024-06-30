@@ -1,0 +1,93 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "[Windows] Clean",
+            "type": "shell",
+            "group": "build",
+            "options": { "shell": { "executable": "PowerShell" } },
+            "command": "if (Test-Path build-win) { Remove-Item -Recurse -Force build-win\\* } else { New-Item -Type Directory -Path build-win }",
+            "problemMatcher": []
+        },
+        {
+            "label": "[Linux] Clean",
+            "type": "shell",
+            "group": "build",
+            "options": { "shell": { "executable": "Wsl" } },
+            "command": "rm -rf build-linux/ && mkdir -p build-linux/",
+            "problemMatcher": []
+        },
+        {
+            "label": "[Windows] Configure",
+            "type": "shell",
+            "group": "build",
+            "options": { "shell": { "executable": "PowerShell" } },
+            "command": "cd build-win; cmake ..",
+            "dependsOn": [ "[Windows] Clean" ],
+            "problemMatcher": []
+        },
+        {
+            "label": "[Linux] Configure",
+            "type": "shell",
+            "group": "build",
+            "options": { "shell": { "executable": "Wsl" } },
+            "command": "cd build-linux; cmake ..",
+            "dependsOn": [ "[Linux] Clean" ],
+            "problemMatcher": []
+        },
+        {
+            "label": "[Windows] Build",
+            "type": "shell",
+            "group": "build",
+            "options": { "shell": { "executable": "PowerShell" } },
+            "command": [
+                "&{Import-Module \\\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio.DevShell.dll\\\"; ",
+                "Enter-VsDevShell 14998cd4}; ",
+                "cd C:\\Users\\Тимур\\Documents\\Project\\tncrypt\\build-win; ",
+                "msbuild tncrypt.sln"],
+            "problemMatcher": []
+        },
+        {
+            "label": "[Linux] Build",
+            "type": "shell",
+            "group": "build",
+            "options": { "shell": { "executable": "Wsl" } },
+            "command": "cd build-linux; make",
+            "problemMatcher": []
+        },
+        {
+            "label": "[Windows] Rebuild",
+            "type": "shell",
+            "group": "build",
+            "options": { "shell": { "executable": "PowerShell" } },
+            "dependsOn": [ "[Windows] Clear", "[Windows] Configure", "[Windows] Build" ],
+            "problemMatcher": []
+        },
+        {
+            "label": "[Linux] Rebuild",
+            "type": "shell",
+            "group": "build",
+            "options": { "shell": { "executable": "Wsl" } },
+            "dependsOn": [ "[Linux] Clear", "[Linux] Configure", "[Linux] Build" ],
+            "problemMatcher": []
+        },
+        {
+            "label": "[Windows] Test",
+            "type": "shell",
+            "group": "build",
+            "options": { "shell": { "executable": "PowerShell" } },
+            "command": [ " build-win\\Debug\\tn_test.exe "],
+            "dependsOn": [ "[Windows] Build" ],
+            "problemMatcher": []
+        },
+        {
+            "label": "[Linux] Test",
+            "type": "shell",
+            "group": "build",
+            "options": { "shell": { "executable": "Wsl" } },
+            "command": "./build-linux/tn_test",
+            "dependsOn": [ "[Linux] Build" ],
+            "problemMatcher": []
+        }
+    ]
+}
